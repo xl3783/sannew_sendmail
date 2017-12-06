@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>群发邮件</title>
+</head>
+<body>
+<a>下载模板</a>
+<a>上传数据</a>
+<a>下载模板</a>
+
+<form action="send_group_email.php" method="post" enctype="multipart/form-data">
+    <label for="file">文件名：</label>
+    <input type="file" name="file" id="file"><br>
+    <p>邮箱: <input type="text" name="email" value="xxx@email.com" /></p>
+    <p>昵称: <input type="text" name="nickname" value="xxx"/></p>
+    <p>密码: <input type="password" name="pwd" /></p>
+    <p>时间: <input type="text" name="time" value="x月x日"/></p>
+    <p>标题: <input type="text" name="title" value="邮件标题"/></p>
+    <p>主题: <input type="text" name="theme" value="邮件主题"/></p>
+    <input type="submit" value="提交" />
+</form>
+</body>
+</html>

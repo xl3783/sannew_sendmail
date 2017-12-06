@@ -1,36 +1,42 @@
-﻿<?php
+<?php
+/**
+ * Created by PhpStorm.
+ * User: admin
+ * Date: 2017/12/6
+ * Time: 10:54
+ */
 
 require_once("PHPMailer/class.phpmailer.php");
 require_once("PHPMailer/class.smtp.php");
 require_once("PHPExcel/PHPExcel.php");
 require_once("smarty/Smarty.class.php");
 
-$file = dirname(__FILE__).'\source\config.xlsx';
-$objPHPExcel = PHPExcel_IOFactory::load($file);
-$sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
-
-$mailUrl = $sheetData[2]['A'];//邮箱
-$mailPwd = $sheetData[2]['C'];//密码
-$mailUname = $sheetData[2]['B'];//昵称
-$time = $sheetData[2]['D'];
-$time2 = $sheetData[2]['D'];
+require_once("upload_file.php");
+$mailUrl = $_POST['email'];//邮箱
+$mailPwd = $_POST['pwd'];//密码
+$mailUname = $_POST['nickname'];//昵称
+$time = $_POST['time'];
+$time2 = $time;
 $time = ($time - 25569)*24*60*60;
 $year = gmdate('Y年',$time);
 $month = gmdate('m月',$time);
 $day = gmdate('d日',$time);
 
-$dataFile = $sheetData[2]['G'];
-$title = $sheetData[2]['E'];//标题
-$theme = $sheetData[2]['F'];//主题
-$file = dirname(__FILE__)."\\source\\".$dataFile;
+//$dataFile = $sheetData[2]['G'];
+$title = $_POST['title'];//标题
+$theme = $_POST['theme'];//主题
+$file = dirname(__FILE__)."\\source\\userdata.xlsx";
+if(!file_exists($file)){
+    $file = dirname(__FILE__)."\\source\\data.xlsx";
+}
 $file = iconv("utf-8","gb2312",$file);
 $objPHPExcel = PHPExcel_IOFactory::load($file);
 $sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
 
 $smarty = new Smarty();
 $number = $name=$department = $duty = $baseSalary=$performanceSalary=$storAllowance=$fullDuty=$hiringAward=$classFee=$otherAllowance=$houseAllowance
-=$monthWage=$leaveDays=$leaveCost=$sickHours=$sickCost=$otherCost=$totalCost=$factWage=$socialSecurity=$houseFund=$tax=$totalWage=$higherupGrade=
-    $innerGrade=$outerGrade=$finnalGrade='';
+    =$monthWage=$leaveDays=$leaveCost=$sickHours=$sickCost=$otherCost=$totalCost=$factWage=$socialSecurity=$houseFund=$tax=$totalWage=$higherupGrade=
+$innerGrade=$outerGrade=$finnalGrade='';
 array_shift($sheetData);
 array_shift($sheetData);
 
@@ -86,7 +92,7 @@ foreach ($sheetData as $row){
         'sickHours'=>$sickHours,
         'sickCost'=>$sickCost,
         'otherCost'=>$otherCost,
-		'totalCost'=>$totalCost,
+        'totalCost'=>$totalCost,
         'factWage'=>$factWage,
         'socialSecurity'=>$socialSecurity,
         'houseFund'=>$houseFund,
@@ -105,7 +111,7 @@ foreach ($sheetData as $row){
     //$content = $smarty->fetch('工资条模板.html');
     $smarty->assign($data);
     $content = $smarty->fetch('template.html');
-	
+
     if(sendMail($row['AB'],$theme,$content)){
         echo $name.':邮件发送成功!<br>';
     }else{
@@ -113,6 +119,10 @@ foreach ($sheetData as $row){
     }
 }
 
+$data_file = 'source/userdata.xlsx';
+if(file_exists($data_file)){
+    unlink($data_file);
+}
 
 /*发送邮件方法
  *@param $to：接收者 $theme：标题 $content：邮件内容
@@ -169,7 +179,7 @@ function sendMail($to,$theme,$content){
     $mail->addAddress($to,' ');
 
     //添加多个收件人 则多次调用方法即可
-     //$mail->addAddress('llxiang@sannewschool.com',' ');
+    //$mail->addAddress('llxiang@sannewschool.com',' ');
 
     //添加该邮件的主题
     $mail->Subject = $theme;
